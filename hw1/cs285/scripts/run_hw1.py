@@ -20,6 +20,7 @@ from cs285.infrastructure.replay_buffer import ReplayBuffer
 from cs285.policies.MLP_policy import MLPPolicySL
 from cs285.policies.loaded_gaussian_policy import LoadedGaussianPolicy
 
+from cs285 import HW_PATH
 
 # how many rollouts to save as videos to tensorboard
 MAX_NVIDEO = 2
@@ -100,8 +101,9 @@ def run_training_loop(params):
     ## LOAD EXPERT POLICY
     #######################
 
-    print('Loading expert policy from...', params['expert_policy_file'])
-    expert_policy = LoadedGaussianPolicy(params['expert_policy_file'])
+    expert_policy_file = os.path.join(HW_PATH, params['expert_policy_file'])
+    print('Loading expert policy from...', expert_policy_file)
+    expert_policy = LoadedGaussianPolicy(expert_policy_file)
     expert_policy.to(ptu.device)
     print('Done restoring expert policy...')
 
@@ -124,7 +126,8 @@ def run_training_loop(params):
         print("\nCollecting data to be used for training...")
         if itr == 0:
             # BC training from expert data.
-            paths = pickle.load(open(params['expert_data'], 'rb'))
+            expert_data_file = os.path.join(HW_PATH, params['expert_data'])
+            paths = pickle.load(open(expert_data_file, 'rb'))
             envsteps_this_batch = 0
         else:
             # DAGGER training from sampled data relabeled by expert

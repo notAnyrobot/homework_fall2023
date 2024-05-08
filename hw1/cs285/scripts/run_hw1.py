@@ -160,11 +160,12 @@ def run_training_loop(params):
           # HINT2: use np.random.permutation to sample random indices
           # HINT3: return corresponding data points from each array (i.e., not different indices from each array)
           # for imitation learning, we only need observations and actions.  
-          ob_batch, ac_batch = TODO
-
-          # use the sampled data to train an agent
-          train_log = actor.update(ob_batch, ac_batch)
-          training_logs.append(train_log)
+          train_batch_generator = replay_buffer.batch_generator(params['train_batch_size'])
+          for ob_batch, ac_batch in train_batch_generator:
+        #   ob_batch, ac_batch = TODO
+            # use the sampled data to train an agent
+            train_log = actor.update(ob_batch, ac_batch)
+            training_logs.append(train_log)
 
         # log/save
         print('\nBeginning logging procedure...')

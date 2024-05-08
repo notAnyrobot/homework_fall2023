@@ -60,3 +60,27 @@ class ReplayBuffer(object):
                 [self.terminals, terminals]
             )[-self.max_size:]
 
+
+    def batch_generator(self, train_batch_size: int, seq_len: int = None):
+
+        batch_size = self.obs.shape[0]
+        assert batch_size >= train_batch_size, (
+            "Number of timesteps in replay buffer less than the number requested"
+            " for training."
+        ) 
+        # generate random indices
+        indices = np.random.permutation(self.obs.shape[0])
+        num_train_batches = int(batch_size // train_batch_size)
+        for batch_num in range(num_train_batches):
+            start_idx = batch_num * train_batch_size
+            end_idx = (batch_num + 1) * train_batch_size
+            batch_indices = indices[start_idx:end_idx]
+
+            yield (self.obs[batch_indices], 
+                   self.acs[batch_indices],)
+
+            # yield (self.obs[batch_indices],
+            #        self.acs[batch_indices],
+            #        self.rews[batch_indices],
+            #        self.next_obs[batch_indices],
+            #        self.terminals[batch_indices])
